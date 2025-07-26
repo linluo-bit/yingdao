@@ -4,4 +4,4 @@
 
 from .engine import AutomationEngine
 from .instruction_base import InstructionExecutor, InstructionResult
-from .context import ExecutionContext 
+from .context import ExecutionContext

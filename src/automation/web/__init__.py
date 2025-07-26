@@ -4,4 +4,4 @@
 
 from .driver_manager import WebDriverManager
 from .instructions import *
-from .locators import ElementLocator 
+from .locators import ElementLocator
