@@ -12,7 +12,8 @@ from PyQt6.QtWidgets import (
     QSplitter, QTreeWidget, QTreeWidgetItem, QTextEdit, QGraphicsView,
     QGraphicsScene, QPushButton, QStatusBar,
     QDialog, QFormLayout, QLineEdit, QComboBox, QSpinBox, QCheckBox, QDialogButtonBox,
-    QMenu, QMessageBox, QGraphicsRectItem, QGraphicsTextItem, QGraphicsEllipseItem, QGraphicsLineItem
+    QMenu, QMessageBox, QGraphicsRectItem, QGraphicsTextItem, QGraphicsEllipseItem, QGraphicsLineItem,
+    QLabel, QScrollArea, QGridLayout
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QMimeData
 from PyQt6.QtGui import QAction, QDrag, QBrush, QPen, QFont, QColor
@@ -174,12 +175,13 @@ class InstructionPanel(QTreeWidget):
         self.addTopLevelItem(web_automation)
 
         # 桌面自动化
-        desktop_automation = QTreeWidgetItem(["桌面自动化"])
-        desktop_automation.addChild(QTreeWidgetItem(["点击坐标"]))
-        desktop_automation.addChild(QTreeWidgetItem(["输入文本"]))
-        desktop_automation.addChild(QTreeWidgetItem(["按键操作"]))
-        desktop_automation.addChild(QTreeWidgetItem(["鼠标拖拽"]))
-        desktop_automation.addChild(QTreeWidgetItem(["截图"]))
+        desktop_automation = QTreeWidgetItem(["桌面软件自动化"])
+        desktop_automation.addChild(QTreeWidgetItem(["获取窗口对象"]))
+        desktop_automation.addChild(QTreeWidgetItem(["获取窗口对象列表"]))
+        desktop_automation.addChild(QTreeWidgetItem(["点击元素(win)"]))
+        desktop_automation.addChild(QTreeWidgetItem(["鼠标悬停在元素上(win)"]))
+        desktop_automation.addChild(QTreeWidgetItem(["填写输入框(win)"]))
+        desktop_automation.addChild(QTreeWidgetItem(["运行或打开"]))
         self.addTopLevelItem(desktop_automation)
 
         # 数据处理
@@ -639,6 +641,280 @@ class LogPanel(QTextEdit):
         self.append("等待用户操作...")
 
 
+class AutomationPluginDialog(QDialog):
+    """自动化插件管理对话框"""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("自动化插件")
+        self.setModal(True)
+        self.resize(800, 600)
+        self.setup_ui()
+    
+    def setup_ui(self):
+        """设置界面"""
+        layout = QVBoxLayout(self)
+        
+        # 说明文本
+        description = QLabel(
+            "自动化插件是影刀RPA执行相应自动化必备的扩展程序，请按需安装，若不确定可根据应用运行时的错误指引进行安装"
+        )
+        description.setWordWrap(True)
+        description.setStyleSheet("QLabel { padding: 10px; background-color: #f0f0f0; border-radius: 5px; }")
+        layout.addWidget(description)
+        
+        # 创建滚动区域
+        scroll_area = QScrollArea()
+        scroll_widget = QWidget()
+        scroll_layout = QVBoxLayout(scroll_widget)
+        
+        # 常规插件区域
+        regular_label = QLabel("常规")
+        regular_label.setStyleSheet("QLabel { font-size: 16px; font-weight: bold; margin: 10px 0; }")
+        scroll_layout.addWidget(regular_label)
+        
+        # 插件网格布局
+        plugin_grid = QGridLayout()
+        
+        # 定义插件列表
+        plugins = [
+            {
+                "name": "Google Chrome 自动化",
+                "description": "支持谷歌浏览器实现自动化能力",
+                "icon": "🌐",
+                "status": "installed",  # installed, not_installed
+                "action": "重新安装"
+            },
+            {
+                "name": "Microsoft Edge 自动化", 
+                "description": "支持微软 Edge 浏览器实现自动化能力",
+                "icon": "🌐",
+                "status": "not_installed",
+                "action": "安装"
+            },
+            {
+                "name": "Firefox 自动化",
+                "description": "支持 Firefox 浏览器支持自动化能力", 
+                "icon": "🦊",
+                "status": "not_installed",
+                "action": "安装"
+            },
+            {
+                "name": "Java 自动化",
+                "description": "支持 Java 桌面应用实现自动化能力",
+                "icon": "☕",
+                "status": "not_installed", 
+                "action": "安装"
+            },
+            {
+                "name": "Android 手机自动化",
+                "description": "支持 Android 手机实现自动化能力",
+                "icon": "🤖",
+                "status": "not_installed",
+                "action": "安装"
+            },
+            {
+                "name": "360 安全浏览器自动化",
+                "description": "支持360安全浏览器实现自动化能力",
+                "icon": "🛡️",
+                "status": "installed",
+                "action": "重新安装"
+            }
+        ]
+        
+        # 创建插件卡片
+        for i, plugin in enumerate(plugins):
+            card = self.create_plugin_card(plugin)
+            row = i // 2
+            col = i % 2
+            plugin_grid.addWidget(card, row, col)
+        
+        # 添加自定义插件卡片
+        custom_card = self.create_custom_plugin_card()
+        plugin_grid.addWidget(custom_card, len(plugins) // 2, len(plugins) % 2)
+        
+        scroll_layout.addLayout(plugin_grid)
+        
+        # 扩展区域
+        extension_label = QLabel("扩展")
+        extension_label.setStyleSheet("QLabel { font-size: 16px; font-weight: bold; margin: 10px 0; }")
+        scroll_layout.addWidget(extension_label)
+        
+        # 扩展区域占位
+        extension_placeholder = QLabel("暂无扩展插件")
+        extension_placeholder.setStyleSheet("QLabel { color: #999; padding: 20px; }")
+        extension_placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        scroll_layout.addWidget(extension_placeholder)
+        
+        scroll_layout.addStretch()
+        
+        # 设置滚动区域
+        scroll_area.setWidget(scroll_widget)
+        scroll_area.setWidgetResizable(True)
+        layout.addWidget(scroll_area)
+        
+        # 底部按钮
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        
+        close_btn = QPushButton("关闭")
+        close_btn.clicked.connect(self.accept)
+        button_layout.addWidget(close_btn)
+        
+        layout.addLayout(button_layout)
+    
+    def create_plugin_card(self, plugin):
+        """创建插件卡片"""
+        card = QWidget()
+        card.setStyleSheet("""
+            QWidget {
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 5px;
+            }
+            QWidget:hover {
+                border-color: #0078d4;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+        """)
+        
+        layout = QVBoxLayout(card)
+        
+        # 插件标题和图标
+        header_layout = QHBoxLayout()
+        icon_label = QLabel(plugin["icon"])
+        icon_label.setStyleSheet("font-size: 24px;")
+        header_layout.addWidget(icon_label)
+        
+        title_label = QLabel(plugin["name"])
+        title_label.setStyleSheet("font-weight: bold; font-size: 14px;")
+        header_layout.addWidget(title_label)
+        header_layout.addStretch()
+        
+        layout.addLayout(header_layout)
+        
+        # 描述
+        desc_label = QLabel(plugin["description"])
+        desc_label.setWordWrap(True)
+        desc_label.setStyleSheet("color: #666; margin: 5px 0;")
+        layout.addWidget(desc_label)
+        
+        # 按钮区域
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        
+        # 详情按钮
+        detail_btn = QPushButton("详情 ↗")
+        detail_btn.setStyleSheet("""
+            QPushButton {
+                border: none;
+                color: #0078d4;
+                text-decoration: underline;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #f0f0f0;
+                border-radius: 3px;
+            }
+        """)
+        detail_btn.clicked.connect(lambda: self.show_plugin_details(plugin))
+        button_layout.addWidget(detail_btn)
+        
+        # 安装/重新安装按钮
+        action_btn = QPushButton(plugin["action"])
+        if plugin["status"] == "installed":
+            action_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #f0f0f0;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    padding: 5px 15px;
+                    color: #666;
+                }
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+            """)
+        else:
+            action_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #0078d4;
+                    border: 1px solid #0078d4;
+                    border-radius: 4px;
+                    padding: 5px 15px;
+                    color: white;
+                }
+                QPushButton:hover {
+                    background-color: #106ebe;
+                }
+            """)
+        
+        action_btn.clicked.connect(lambda: self.install_plugin(plugin))
+        button_layout.addWidget(action_btn)
+        
+        layout.addLayout(button_layout)
+        
+        return card
+    
+    def create_custom_plugin_card(self):
+        """创建自定义插件卡片"""
+        card = QWidget()
+        card.setStyleSheet("""
+            QWidget {
+                background-color: #f8f9fa;
+                border: 2px dashed #ccc;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 5px;
+            }
+            QWidget:hover {
+                border-color: #0078d4;
+                background-color: #f0f8ff;
+            }
+        """)
+        
+        layout = QVBoxLayout(card)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        # 加号图标
+        plus_label = QLabel("+")
+        plus_label.setStyleSheet("font-size: 32px; color: #999; font-weight: bold;")
+        plus_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(plus_label)
+        
+        # 文本
+        text_label = QLabel("添加自定义浏览器自动化")
+        text_label.setStyleSheet("color: #999; margin-top: 10px;")
+        text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(text_label)
+        
+        return card
+    
+    def show_plugin_details(self, plugin):
+        """显示插件详情"""
+        from PyQt6.QtWidgets import QMessageBox
+        QMessageBox.information(
+            self, 
+            f"{plugin['name']} - 详情",
+            f"插件名称: {plugin['name']}\n\n"
+            f"功能描述: {plugin['description']}\n\n"
+            f"安装状态: {'已安装' if plugin['status'] == 'installed' else '未安装'}\n\n"
+            f"版本信息: 1.0.0\n"
+            f"兼容性: Windows 10/11\n"
+            f"更新时间: 2024-01-01"
+        )
+    
+    def install_plugin(self, plugin):
+        """安装插件"""
+        from PyQt6.QtWidgets import QMessageBox
+        if plugin["status"] == "installed":
+            QMessageBox.information(self, "重新安装", f"正在重新安装 {plugin['name']}...")
+        else:
+            QMessageBox.information(self, "安装插件", f"正在安装 {plugin['name']}...")
+
+
 class MainWindow(QMainWindow):
     """主窗口"""
     
@@ -842,6 +1118,11 @@ class MainWindow(QMainWindow):
 
         debug_btn = QPushButton("🐛 调试")
         toolbar_layout.addWidget(debug_btn)
+        
+        # 添加自动化插件按钮
+        plugin_btn = QPushButton("🔌 自动化插件")
+        plugin_btn.clicked.connect(self.open_automation_plugins)
+        toolbar_layout.addWidget(plugin_btn)
 
         layout.addLayout(toolbar_layout)
 
@@ -936,6 +1217,12 @@ class MainWindow(QMainWindow):
         from datetime import datetime
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.log_panel.append(f"[{timestamp}] {message}")
+
+    def open_automation_plugins(self):
+        """打开自动化插件管理"""
+        self.add_log_message("打开自动化插件管理...")
+        dialog = AutomationPluginDialog(self)
+        dialog.exec()
 
     def closeEvent(self, event):
         """关闭事件"""
