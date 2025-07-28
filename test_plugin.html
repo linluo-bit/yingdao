@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome插件测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .test-button:hover {
+            background-color: #106ebe;
+        }
+        .test-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .test-input:focus {
+            border-color: #0078d4;
+            outline: none;
+        }
+        .instructions {
+            background-color: #e7f3ff;
+            border: 1px solid #0078d4;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Chrome插件功能测试</h1>
+        
+        <div class="instructions">
+            <h3>📋 测试步骤：</h3>
+            <ol>
+                <li>确保Chrome插件已安装并启用</li>
+                <li>按住 <strong>Ctrl</strong> 键进入捕获模式</li>
+                <li>鼠标悬停时会高亮显示元素</li>
+                <li>按住 <strong>Ctrl + 鼠标左键</strong> 点击下面的元素进行捕获</li>
+                <li>查看控制台是否有捕获成功的消息</li>
+            </ol>
+        </div>
+
+        <div class="status">
+            <h3>📊 测试状态：</h3>
+            <p>插件状态: <span id="pluginStatus">检查中...</span></p>
+            <p>捕获次数: <span id="captureCount">0</span></p>
+            <p>最后捕获: <span id="lastCapture">无</span></p>
+        </div>
+
+        <h2>🎯 测试元素</h2>
+        
+        <div>
+            <button class="test-button" id="testButton1">测试按钮 1</button>
+            <button class="test-button" id="testButton2">测试按钮 2</button>
+            <button class="test-button" style="background-color: #28a745;">成功按钮</button>
+            <button class="test-button" style="background-color: #dc3545;">危险按钮</button>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <input type="text" class="test-input" placeholder="测试输入框" id="testInput">
+            <textarea class="test-input" placeholder="测试文本区域" rows="3"></textarea>
+        </div>
+
+        <div>
+            <a href="#" id="testLink">测试链接</a>
+            <span id="testSpan">测试文本</span>
+        </div>
+
+        <div class="status">
+            <h3>🔍 调试信息：</h3>
+            <button onclick="checkLocalStorage()" class="test-button">检查本地存储</button>
+            <button onclick="clearLocalStorage()" class="test-button">清空本地存储</button>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        let captureCount = 0;
+
+        // 检查插件状态
+        function checkPluginStatus() {
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                document.getElementById('pluginStatus').textContent = '✅ 插件环境可用';
+            } else {
+                document.getElementById('pluginStatus').textContent = '❌ 插件环境不可用';
+            }
+        }
+
+        // 检查本地存储
+        function checkLocalStorage() {
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.innerHTML = '<h4>本地存储内容：</h4>';
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.includes('rpa')) {
+                    try {
+                        const value = JSON.parse(localStorage.getItem(key));
+                        debugInfo.innerHTML += `<p><strong>${key}:</strong> ${JSON.stringify(value, null, 2)}</p>`;
+                    } catch (e) {
+                        debugInfo.innerHTML += `<p><strong>${key}:</strong> ${localStorage.getItem(key)}</p>`;
+                    }
+                }
+            }
+            
+            if (debugInfo.innerHTML === '<h4>本地存储内容：</h4>') {
+                debugInfo.innerHTML += '<p>没有找到RPA相关的数据</p>';
+            }
+        }
+
+        // 清空本地存储
+        function clearLocalStorage() {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.includes('rpa')) {
+                    keysToRemove.push(key);
+                }
+            }
+            
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            alert(`已清空 ${keysToRemove.length} 个RPA相关数据项`);
+            checkLocalStorage();
+        }
+
+        // 监听元素捕获事件
+        document.addEventListener('click', function(e) {
+            if (e.ctrlKey) {
+                captureCount++;
+                document.getElementById('captureCount').textContent = captureCount;
+                document.getElementById('lastCapture').textContent = new Date().toLocaleTimeString();
+                
+                console.log('元素被点击:', e.target);
+                console.log('元素信息:', {
+                    tagName: e.target.tagName,
+                    id: e.target.id,
+                    className: e.target.className,
+                    text: e.target.textContent?.trim().substring(0, 50)
+                });
+            }
+        });
+
+        // 页面加载时检查插件状态
+        window.addEventListener('load', function() {
+            checkPluginStatus();
+            checkLocalStorage();
+        });
+
+        // 定期检查本地存储变化
+        setInterval(checkLocalStorage, 5000);
+    </script>
+</body>
+</html> 

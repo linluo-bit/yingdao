@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>RPA元素捕获器</title>
+  <link rel="stylesheet" href="content.css">
+  <style>
+    body { font-family: 'Microsoft YaHei', Arial, sans-serif; margin: 16px; }
+    #status { margin-bottom: 10px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
+    button { margin: 2px 4px 8px 0; padding: 6px 12px; border-radius: 4px; border: 1px solid #0078d4; background: #f4f8fb; cursor: pointer; }
+    button:disabled { background: #eee; color: #aaa; }
+    #elementsList { margin-top: 10px; max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; padding: 6px; }
+    .element-item { padding: 4px 0; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .element-tag { color: #0078d4; font-weight: bold; }
+    .element-id { color: #888; margin-left: 6px; }
+    .element-text { color: #333; font-size: 12px; margin-left: 16px; }
+    .empty-state { color: #aaa; text-align: center; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div id="status">准备就绪</div>
+  <button id="startBtn">开始捕获</button>
+  <button id="stopBtn" disabled>停止捕获</button>
+  <button id="exportBtn">导出元素</button>
+  <button id="clearBtn">清空元素</button>
+  <button id="sendToRPABtn">发送到RPA</button>
+  <div id="elementsList"></div>
+  <script src="popup.js"></script>
+</body>
+</html> 

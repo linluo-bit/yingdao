@@ -1,0 +1,91 @@
+/* RPA元素捕获器样式 */
+
+/* 高亮样式 */
+.rpa-highlight {
+    outline: 2px solid #0078d4 !important;
+    outline-offset: 2px !important;
+    background-color: rgba(0, 120, 212, 0.1) !important;
+    transition: all 0.2s ease;
+}
+
+.rpa-highlight:hover {
+    outline-color: #106ebe !important;
+    background-color: rgba(0, 120, 212, 0.2) !important;
+}
+
+/* 捕获模式下的鼠标样式 */
+.rpa-capture-mode {
+    cursor: crosshair !important;
+}
+
+/* 通知样式 */
+.rpa-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #0078d4;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 10000;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 元素信息面板 */
+.rpa-element-info {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10000;
+    font-family: monospace;
+    font-size: 12px;
+    max-width: 300px;
+    word-wrap: break-word;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* 捕获成功提示 */
+.rpa-capture-success {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #28a745;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    z-index: 10001;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+} 

@@ -1,0 +1,26 @@
+{
+  "capturedElements": [
+    {
+      "tagName": "button",
+      "id": "test-button",
+      "className": "btn btn-primary",
+      "text": "测试按钮",
+      "xpath": "//button[@id='test-button']",
+      "cssSelector": "#test-button",
+      "position": {
+        "x": 100,
+        "y": 200,
+        "width": 80,
+        "height": 40
+      },
+      "attributes": {
+        "type": "button",
+        "name": "test"
+      },
+      "timestamp": "2025-07-28T14:17:58.163027",
+      "url": "https://example.com/test"
+    }
+  ],
+  "timestamp": "2025-07-28T14:17:58.163027",
+  "source": "fix-script"
+}

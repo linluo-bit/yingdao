@@ -1,166 +1,193 @@
-# RPA桌面自动化软件 - 影刀复刻版
+# 影刀RPA - 桌面自动化软件
 
-## 🚀 项目简介
+一个基于Python和PyQt6开发的RPA（机器人流程自动化）桌面应用，提供可视化的流程设计、网页自动化、桌面操作等功能。
 
-这是一个**完全开源**的RPA（机器人流程自动化）桌面软件，复刻了影刀RPA的核心功能。使用Python + PyQt6开发，具备可视化流程设计、网页自动化、桌面自动化等功能。
+## 新增功能
 
-![界面预览](影刀主页.png)
+### 🎯 元素捕获功能
+- **集成式元素捕获**：在"点击元素(web)"指令中集成元素捕获功能
+- **Chrome插件支持**：开发了专门的Chrome浏览器插件用于元素捕获
+- **多种选择器支持**：自动生成CSS选择器、XPath、ID、Name等多种选择器
+- **实时高亮显示**：捕获时实时高亮显示目标元素
+- **智能数据传递**：Chrome插件与RPA应用之间的智能数据传递
 
-## ✨ 功能特性
+### 🔧 自动化插件管理
+- **插件管理界面**：提供可视化的自动化插件管理界面
+- **插件安装向导**：简化插件的安装和配置过程
+- **插件状态监控**：实时监控插件的运行状态
 
-- 🎨 **可视化流程设计器** - 拖拽式流程构建，直观易用
-- 🌐 **网页自动化** - 支持Chrome、Firefox等主流浏览器
-- 🖥️ **桌面自动化** - 桌面应用程序自动化操作
-- 📊 **数据处理** - Excel、文本文件等数据操作
-- 🔄 **流程控制** - 循环、条件判断等逻辑控制
-- 📝 **日志监控** - 实时执行日志和错误追踪
-- 🔌 **插件系统** - 可扩展的指令库
+## 技术架构
 
-## 🛠️ 技术架构
+### 核心组件
+- **GUI框架**：PyQt6 - 现代化的跨平台GUI框架
+- **自动化引擎**：基于Selenium的Web自动化
+- **流程设计器**：可视化的拖拽式流程设计
+- **Chrome插件**：元素捕获和选择器生成
+- **数据传递**：文件系统作为Chrome插件与RPA应用的桥梁
 
-- **GUI框架**: PyQt6
-- **网页自动化**: Selenium WebDriver
-- **桌面自动化**: pyautogui + pynput
-- **图像识别**: OpenCV + pytesseract
-- **数据库**: SQLAlchemy + SQLite
-- **异步处理**: asyncio
+### 技术栈
+- **前端**：PyQt6, QGraphicsView, QTreeWidget
+- **后端**：Python 3.8+, asyncio, Selenium
+- **浏览器插件**：Chrome Extension Manifest V3, JavaScript
+- **数据存储**：JSON, Chrome Storage API
 
-## 📋 环境要求
+## 安装和使用
 
-- Python 3.10+
-- Windows 10/11 (主要支持平台)
-- 至少4GB内存
-- 200MB磁盘空间
+### 环境要求
+- Python 3.8+
+- Chrome浏览器
+- Windows 10/11
 
-## 🚀 快速开始
+### 快速开始
+1. **克隆项目**
+   ```bash
+   git clone https://github.com/linluo-bit/yingdao.git
+   cd yingdao
+   ```
 
-### 方法1：一键安装（推荐）
-```bash
-# 1. 克隆项目
-git clone https://github.com/linluo-bit/yingdao.git
-cd yingdao
+2. **安装依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# 2. 运行安装脚本
-install.bat
+3. **安装Chrome插件**
+   - 打开Chrome浏览器
+   - 访问 `chrome://extensions/`
+   - 开启"开发者模式"
+   - 点击"加载已解压的扩展程序"
+   - 选择项目中的 `chrome-extension` 文件夹
 
-# 3. 启动程序
-run.bat
+4. **运行应用**
+   ```bash
+   python main.py
+   ```
+
+## Chrome插件安装
+
+### 详细安装步骤
+
+1. **下载插件文件**
+   - 确保项目中的 `chrome-extension` 文件夹完整
+
+2. **安装到Chrome**
+   - 打开Chrome浏览器
+   - 在地址栏输入：`chrome://extensions/`
+   - 开启右上角的"开发者模式"
+   - 点击"加载已解压的扩展程序"
+   - 选择项目中的 `chrome-extension` 文件夹
+   - 插件安装完成，会在工具栏显示图标
+
+3. **验证安装**
+   - 插件图标应该出现在Chrome工具栏
+   - 点击插件图标应该能看到弹窗界面
+   - 在任意网页上按住Ctrl键应该能看到鼠标变成十字形
+
+### 插件功能
+- **元素捕获**：按住Ctrl+鼠标左键捕获网页元素
+- **选择器生成**：自动生成CSS、XPath等多种选择器
+- **数据导出**：支持导出捕获的元素数据
+- **批量捕获**：支持连续捕获多个元素
+
+## 使用指南
+
+### 基本操作
+1. **创建项目**：点击"文件" → "新建项目"
+2. **设计流程**：从左侧指令库拖拽指令到画布
+3. **配置指令**：双击指令进行详细配置
+4. **运行流程**：点击"运行"按钮执行自动化流程
+
+### 元素捕获使用
+1. **添加点击元素指令**
+   - 从指令库拖拽"点击元素(web)"到画布
+   - 双击打开配置对话框
+
+2. **使用元素捕获**
+   - 选择选择器类型（CSS、XPath、ID、Name）
+   - 点击"🔍 捕获元素"按钮
+   - 按照提示切换到浏览器窗口
+   - 按住Ctrl键进入捕获模式
+   - 鼠标悬停时会高亮显示元素
+   - 按住Ctrl+鼠标左键点击要捕获的元素
+   - 返回RPA应用，选择器会自动填入
+
+3. **验证和运行**
+   - 检查自动填入的选择器是否正确
+   - 点击"确定"完成配置
+   - 运行流程测试效果
+
+### 网页自动化
+- **打开网页**：指定URL打开目标网页
+- **点击元素**：使用选择器点击网页元素
+- **填写表单**：自动填写输入框内容
+- **获取内容**：提取网页文本或数据
+- **等待操作**：设置等待时间或条件
+
+### 桌面自动化
+- **鼠标操作**：点击、拖拽、滚动等
+- **键盘输入**：文本输入、快捷键等
+- **窗口管理**：打开、关闭、切换窗口
+- **文件操作**：复制、移动、删除文件
+
+## 项目结构
+
+```
+影刀/
+├── main.py                      # 主程序入口
+├── requirements.txt             # 依赖包列表
+├── README.md                   # 项目说明
+├── 元素捕获功能使用说明.md        # 元素捕获详细说明
+├── chrome-extension/           # Chrome插件
+│   ├── manifest.json          # 插件配置
+│   ├── content.js            # 元素捕获逻辑
+│   ├── background.js         # 后台管理
+│   ├── popup.html           # 插件界面
+│   ├── popup.js            # 插件逻辑
+│   ├── content.css         # 样式文件
+│   ├── install.bat         # 安装脚本
+│   ├── icons/             # 插件图标
+│   └── README.md          # 插件说明
+├── captured_elements/      # 捕获的元素文件
+├── src/                   # 源代码
+│   ├── automation/        # 自动化模块
+│   │   └── web/          # 网页自动化
+│   └── core/             # 核心引擎
+└── venv/                 # 虚拟环境
 ```
 
-### 方法2：手动安装
-```powershell
-# 1. 克隆项目
-git clone https://github.com/linluo-bit/yingdao.git
-cd yingdao
+## 开发说明
 
-# 2. 创建虚拟环境
-python -m venv venv
-venv\Scripts\activate
+### 代码结构
+- **main.py**：主窗口和UI逻辑
+- **src/core/engine.py**：自动化执行引擎
+- **src/automation/web/instructions.py**：网页自动化指令
+- **chrome-extension/**：Chrome插件相关文件
 
-# 3. 安装依赖
-pip install -r requirements.txt
+### 扩展开发
+- **添加新指令**：在`src/automation/web/instructions.py`中实现
+- **修改UI**：编辑`main.py`中的界面代码
+- **插件开发**：修改`chrome-extension/`中的文件
 
-# 4. 运行程序
-python main.py
-```
+## 更新日志
 
-## 📁 项目结构
+### v1.1.0 (最新)
+- ✨ 新增元素捕获功能，集成到点击元素指令中
+- 🔧 开发Chrome浏览器插件用于元素捕获
+- 📦 添加自动化插件管理界面
+- 🎨 优化UI布局和用户体验
+- 🐛 修复WebDriver连接问题
+- 📝 完善文档和使用说明
 
-```
-yingdao/
-├── 📄 main.py                    # 主程序入口
-├── 📄 requirements.txt           # 项目依赖
-├── 📄 setup.py                   # 安装配置
-├── 📄 README.md                  # 说明文档
-├── 📄 RPA_Architecture_Design.md # 技术架构设计
-├── 📄 install.bat                # 一键安装脚本
-├── 📄 run.bat                    # 一键运行脚本
-├── 📄 .gitignore                 # Git忽略文件
-└── 📄 影刀主页.png               # 界面参考图
-```
+### v1.0.0
+- 🎉 初始版本发布
+- 📋 基础RPA功能
+- 🖥️ 可视化流程设计
+- 🌐 网页自动化支持
+- 🖱️ 桌面操作功能
 
-## 🎯 开发路线
+## 贡献指南
 
-- [x] **阶段1**: 基础GUI框架 ✅
-- [ ] **阶段2**: 可视化流程设计器
-- [ ] **阶段3**: 网页自动化模块
-- [ ] **阶段4**: 桌面自动化模块
-- [ ] **阶段5**: 数据处理功能
-- [ ] **阶段6**: 插件系统
+欢迎提交Issue和Pull Request来改进项目！
 
-## 💡 使用示例
+## 许可证
 
-### 基础操作流程
-1. 启动软件 → 运行 `python main.py`
-2. 创建项目 → 文件 → 新建项目
-3. 设计流程 → 从左侧指令库拖拽指令到画布
-4. 配置参数 → 双击指令节点设置参数
-5. 运行调试 → 点击"运行"按钮
-
-### 网页自动化示例
-```
-1. 拖入"打开网页" → 设置URL
-2. 拖入"点击元素" → 设置元素选择器  
-3. 拖入"填写输入框" → 设置输入内容
-4. 连接各节点 → 运行流程
-```
-
-## 🔧 开发指南
-
-### 添加新指令
-1. 在对应模块中创建指令类
-2. 继承`InstructionExecutor`基类
-3. 实现`execute()`方法
-4. 在指令库中注册
-
-### 运行测试
-```bash
-pytest tests/
-```
-
-### 代码规范
-```bash
-# 格式化代码
-black src/
-
-# 检查代码质量
-flake8 src/
-```
-
-## ❓ 常见问题
-
-**Q: 程序启动失败？**
-A: 检查Python版本是否3.10+，依赖包是否完整安装
-
-**Q: 网页自动化不工作？**
-A: 确保Chrome浏览器已安装，检查防火墙设置
-
-**Q: 编码错误？**
-A: 确保使用UTF-8编码，避免中文路径
-
-## 🤝 贡献指南
-
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
-
-## 📄 许可证
-
-本项目使用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
-
-## 🙏 致谢
-
-- 感谢影刀RPA提供的优秀设计理念
-- 感谢所有开源库的贡献者
-- 感谢社区的反馈和建议
-
-## 📧 联系方式
-
-- 项目地址: [https://github.com/linluo-bit/yingdao](https://github.com/linluo-bit/yingdao)
-- 问题反馈: [Issues](https://github.com/linluo-bit/yingdao/issues)
-
----
-
-⭐ **如果这个项目对你有帮助，请给个Star支持一下！** 
+MIT License 

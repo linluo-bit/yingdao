@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPA元素捕获测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 10px;
+        }
+        .button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #106ebe;
+        }
+        .button.secondary {
+            background-color: #6c757d;
+        }
+        .button.secondary:hover {
+            background-color: #5a6268;
+        }
+        .button.success {
+            background-color: #28a745;
+        }
+        .button.success:hover {
+            background-color: #218838;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .input-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .capture-info {
+            background-color: #e7f3ff;
+            border: 1px solid #0078d4;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .capture-info h4 {
+            margin-top: 0;
+            color: #0078d4;
+        }
+        .element-display {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .highlight {
+            outline: 3px solid #0078d4 !important;
+            outline-offset: 2px !important;
+            background-color: rgba(0, 120, 212, 0.1) !important;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        }
+        .notification.success {
+            background-color: #28a745;
+        }
+        .notification.error {
+            background-color: #dc3545;
+        }
+        .notification.info {
+            background-color: #0078d4;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .link {
+            color: #0078d4;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .image {
+            max-width: 200px;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 RPA元素捕获测试页面</h1>
+            <p>测试各种网页元素的捕获功能</p>
+        </div>
+
+        <!-- 元素捕获控制区域 -->
+        <div class="test-section">
+            <h3>🎯 元素捕获控制</h3>
+            <div class="capture-info">
+                <h4>使用说明：</h4>
+                <p><strong>方法1（推荐）：</strong> 点击下方"开始捕获"按钮，然后点击页面上的任意元素</p>
+                <p><strong>方法2：</strong> 按住Ctrl键，然后点击页面上的任意元素</p>
+                <p><strong>注意：</strong> 捕获的元素信息会自动保存到localStorage，并尝试发送到RPA应用</p>
+            </div>
+            
+            <button id="startCapture" class="button success">🚀 开始捕获</button>
+            <button id="stopCapture" class="button secondary">⏹️ 停止捕获</button>
+            <button id="clearData" class="button">🗑️ 清除数据</button>
+            <button id="viewData" class="button">📊 查看数据</button>
+            
+            <div id="captureStatus" class="element-display" style="display: none;">
+                <strong>捕获状态：</strong> <span id="statusText">未开始</span>
+            </div>
+        </div>
+
+        <!-- 按钮测试区域 -->
+        <div class="test-section">
+            <h3>🔘 按钮元素测试</h3>
+            <button id="test-button" class="button">主要按钮</button>
+            <button class="button secondary">次要按钮</button>
+            <button class="button success">成功按钮</button>
+            <button class="button" style="background-color: #dc3545;">危险按钮</button>
+            <button class="button" disabled>禁用按钮</button>
+        </div>
+
+        <!-- 表单元素测试区域 -->
+        <div class="test-section">
+            <h3>📝 表单元素测试</h3>
+            <div class="input-group">
+                <label for="username">用户名：</label>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" value="testuser">
+            </div>
+            <div class="input-group">
+                <label for="email">邮箱：</label>
+                <input type="email" id="email" name="email" placeholder="请输入邮箱" value="test@example.com">
+            </div>
+            <div class="input-group">
+                <label for="password">密码：</label>
+                <input type="password" id="password" name="password" placeholder="请输入密码" value="123456">
+            </div>
+            <div class="input-group">
+                <label for="message">消息：</label>
+                <textarea id="message" name="message" placeholder="请输入消息内容">这是一条测试消息</textarea>
+            </div>
+            <div class="input-group">
+                <label for="country">国家：</label>
+                <select id="country" name="country">
+                    <option value="">请选择国家</option>
+                    <option value="cn" selected>中国</option>
+                    <option value="us">美国</option>
+                    <option value="jp">日本</option>
+                    <option value="kr">韩国</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>
+                    <input type="checkbox" id="agree" name="agree" checked> 我同意服务条款
+                </label>
+            </div>
+            <div class="input-group">
+                <label>性别：</label>
+                <label><input type="radio" name="gender" value="male" checked> 男</label>
+                <label><input type="radio" name="gender" value="female"> 女</label>
+            </div>
+        </div>
+
+        <!-- 链接和图片测试区域 -->
+        <div class="test-section">
+            <h3>🔗 链接和图片测试</h3>
+            <p>这是一个<a href="#" class="link">普通链接</a>，点击测试捕获。</p>
+            <p>这是一个<a href="https://www.baidu.com" class="link" target="_blank">外部链接</a>，会打开新窗口。</p>
+            <p>这是一个<a href="mailto:test@example.com" class="link">邮件链接</a>。</p>
+            <p>这是一个<a href="tel:+1234567890" class="link">电话链接</a>。</p>
+            
+            <div style="margin: 20px 0;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlRlc3QgSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo=" alt="测试图片" class="image">
+            </div>
+        </div>
+
+        <!-- 表格测试区域 -->
+        <div class="test-section">
+            <h3>📊 表格元素测试</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>年龄</th>
+                        <th>职业</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>张三</td>
+                        <td>25</td>
+                        <td>工程师</td>
+                        <td><button class="button">编辑</button></td>
+                    </tr>
+                    <tr>
+                        <td>李四</td>
+                        <td>30</td>
+                        <td>设计师</td>
+                        <td><button class="button">编辑</button></td>
+                    </tr>
+                    <tr>
+                        <td>王五</td>
+                        <td>28</td>
+                        <td>产品经理</td>
+                        <td><button class="button">编辑</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 捕获结果显示区域 -->
+        <div class="test-section">
+            <h3>📋 捕获结果</h3>
+            <div id="capturedElement" class="element-display">
+                等待捕获元素...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 元素捕获器类
+        class ElementCapture {
+            constructor() {
+                this.isCapturing = false;
+                this.capturedElements = [];
+                this.init();
+            }
+
+            init() {
+                // 绑定按钮事件
+                document.getElementById('startCapture').addEventListener('click', () => this.startCapture());
+                document.getElementById('stopCapture').addEventListener('click', () => this.stopCapture());
+                document.getElementById('clearData').addEventListener('click', () => this.clearData());
+                document.getElementById('viewData').addEventListener('click', () => this.viewData());
+
+                // 绑定键盘事件
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+                document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+                
+                // 绑定鼠标事件
+                document.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                document.addEventListener('mouseover', (e) => this.handleMouseOver(e));
+                document.addEventListener('mouseout', (e) => this.handleMouseOut(e));
+
+                this.updateStatus('就绪');
+            }
+
+            startCapture() {
+                this.isCapturing = true;
+                this.updateStatus('正在捕获 - 点击任意元素');
+                this.showNotification('元素捕获已开始', 'info');
+            }
+
+            stopCapture() {
+                this.isCapturing = false;
+                this.removeHighlight();
+                this.updateStatus('已停止');
+                this.showNotification('元素捕获已停止', 'info');
+            }
+
+            handleKeyDown(event) {
+                if (event.key === 'Control') {
+                    this.isCapturing = true;
+                    this.updateStatus('正在捕获 - 点击任意元素');
+                }
+            }
+
+            handleKeyUp(event) {
+                if (event.key === 'Control') {
+                    this.isCapturing = false;
+                    this.removeHighlight();
+                    this.updateStatus('就绪');
+                }
+            }
+
+            handleMouseOver(event) {
+                if (this.isCapturing) {
+                    this.highlightElement(event.target);
+                }
+            }
+
+            handleMouseOut(event) {
+                if (this.isCapturing) {
+                    this.removeHighlight();
+                }
+            }
+
+            handleMouseDown(event) {
+                if (this.isCapturing) {
+                    event.preventDefault();
+                    this.captureElement(event.target, event);
+                }
+            }
+
+            highlightElement(element) {
+                this.removeHighlight();
+                element.classList.add('highlight');
+            }
+
+            removeHighlight() {
+                const highlighted = document.querySelector('.highlight');
+                if (highlighted) {
+                    highlighted.classList.remove('highlight');
+                }
+            }
+
+            captureElement(element, event) {
+                const elementInfo = this.getElementInfo(element);
+                
+                // 显示捕获成功提示
+                this.showCaptureSuccess(elementInfo);
+                
+                // 保存到localStorage
+                this.saveToLocalStorage(elementInfo);
+                
+                // 发送到RPA应用
+                this.sendToRPAApp(elementInfo);
+                
+                // 显示在页面上
+                this.displayCapturedElement(elementInfo);
+                
+                console.log('元素已捕获:', elementInfo);
+            }
+
+            getElementInfo(element) {
+                const rect = element.getBoundingClientRect();
+                const computedStyle = window.getComputedStyle(element);
+                
+                return {
+                    tagName: element.tagName.toLowerCase(),
+                    id: element.id || '',
+                    className: element.className || '',
+                    text: element.textContent?.trim().substring(0, 50) || '',
+                    xpath: this.getXPath(element),
+                    cssSelector: this.getCSSSelector(element),
+                    position: {
+                        x: rect.left + window.scrollX,
+                        y: rect.top + window.scrollY,
+                        width: rect.width,
+                        height: rect.height
+                    },
+                    attributes: this.getAttributes(element),
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href
+                };
+            }
+
+            getXPath(element) {
+                if (element.id) {
+                    return `//*[@id="${element.id}"]`;
+                }
+                
+                if (element === document.body) {
+                    return '/html/body';
+                }
+                
+                let path = '';
+                while (element && element.nodeType === Node.ELEMENT_NODE) {
+                    let index = 1;
+                    let sibling = element.previousSibling;
+                    
+                    while (sibling) {
+                        if (sibling.nodeType === Node.ELEMENT_NODE && sibling.tagName === element.tagName) {
+                            index++;
+                        }
+                        sibling = sibling.previousSibling;
+                    }
+                    
+                    const tagName = element.tagName.toLowerCase();
+                    const pathIndex = index > 1 ? `[${index}]` : '';
+                    path = `/${tagName}${pathIndex}${path}`;
+                    
+                    element = element.parentNode;
+                }
+                
+                return path;
+            }
+
+            getCSSSelector(element) {
+                if (element.id) {
+                    return `#${element.id}`;
+                }
+                
+                let selector = element.tagName.toLowerCase();
+                
+                if (element.className) {
+                    const classes = element.className.split(' ').filter(c => c.trim());
+                    if (classes.length > 0) {
+                        selector += '.' + classes.join('.');
+                    }
+                }
+                
+                // 添加属性选择器
+                const attributes = ['name', 'type', 'value', 'title', 'alt'];
+                for (const attr of attributes) {
+                    if (element.hasAttribute(attr)) {
+                        selector += `[${attr}="${element.getAttribute(attr)}"]`;
+                    }
+                }
+                
+                return selector;
+            }
+
+            getAttributes(element) {
+                const attributes = {};
+                for (const attr of element.attributes) {
+                    attributes[attr.name] = attr.value;
+                }
+                return attributes;
+            }
+
+            showCaptureSuccess(elementInfo) {
+                this.showNotification(`✅ 元素已捕获: ${elementInfo.tagName}${elementInfo.id ? '#' + elementInfo.id : ''}`, 'success');
+            }
+
+            saveToLocalStorage(elementInfo) {
+                try {
+                    // 保存到localStorage
+                    const storageKey = 'rpa_captured_element_' + Date.now();
+                    localStorage.setItem(storageKey, JSON.stringify(elementInfo));
+                    
+                    // 同时保存最新的元素信息
+                    localStorage.setItem('rpa_last_captured_element', JSON.stringify(elementInfo));
+                    localStorage.setItem('rpa_last_capture_time', Date.now().toString());
+                    
+                    console.log('元素信息已保存到localStorage:', storageKey);
+                } catch (error) {
+                    console.error('保存到localStorage失败:', error);
+                    this.showNotification('保存失败，请重试', 'error');
+                }
+            }
+
+            sendToRPAApp(elementInfo) {
+                // 尝试发送到RPA应用的HTTP服务器
+                const rpaServerUrl = 'http://localhost:3000/capture_element';
+                
+                fetch(rpaServerUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'element_captured',
+                        element: elementInfo
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('元素信息已发送到RPA应用');
+                        this.showNotification('元素信息已发送到RPA应用', 'success');
+                    } else {
+                        console.log('RPA应用响应错误，但数据已保存到localStorage');
+                    }
+                })
+                .catch(error => {
+                    console.log('无法连接到RPA应用，但数据已保存到localStorage:', error);
+                });
+                
+                // 同时保存到本地文件服务器（备用方案）
+                const fileServerUrl = 'http://localhost:8080/save_element';
+                fetch(fileServerUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(elementInfo)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('元素信息已保存到文件服务器');
+                    } else {
+                        console.log('文件服务器响应错误');
+                    }
+                })
+                .catch(error => {
+                    console.log('无法连接到文件服务器:', error);
+                });
+            }
+
+            displayCapturedElement(elementInfo) {
+                const display = document.getElementById('capturedElement');
+                display.textContent = JSON.stringify(elementInfo, null, 2);
+            }
+
+            updateStatus(status) {
+                const statusElement = document.getElementById('captureStatus');
+                const statusText = document.getElementById('statusText');
+                statusElement.style.display = 'block';
+                statusText.textContent = status;
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                // 3秒后自动移除
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+
+            clearData() {
+                try {
+                    const keysToRemove = [];
+                    
+                    // 收集所有RPA相关的键
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && (key.startsWith('rpa_') || key.includes('captured_element'))) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    // 删除所有相关数据
+                    keysToRemove.forEach(key => localStorage.removeItem(key));
+                    
+                    document.getElementById('capturedElement').textContent = '数据已清除';
+                    this.showNotification(`已清除 ${keysToRemove.length} 个数据项`, 'success');
+                } catch (error) {
+                    this.showNotification('清除数据失败', 'error');
+                }
+            }
+
+            viewData() {
+                try {
+                    const elementData = localStorage.getItem('rpa_last_captured_element');
+                    const captureTime = localStorage.getItem('rpa_last_capture_time');
+                    
+                    if (elementData) {
+                        const element = JSON.parse(elementData);
+                        const time = new Date(parseInt(captureTime)).toLocaleString();
+                        
+                        const display = document.getElementById('capturedElement');
+                        display.textContent = `捕获时间: ${time}\n\n元素信息:\n${JSON.stringify(element, null, 2)}`;
+                    } else {
+                        document.getElementById('capturedElement').textContent = '没有找到捕获的元素数据';
+                    }
+                } catch (error) {
+                    document.getElementById('capturedElement').textContent = `读取失败: ${error.message}`;
+                }
+            }
+        }
+
+        // 初始化元素捕获器
+        const elementCapture = new ElementCapture();
+    </script>
+</body>
+</html> 
